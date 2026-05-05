@@ -10,9 +10,6 @@ The other investments will be:
 3. 6 month CD
 4. High Yield Savings Account
 
-
-a Guardian Whole Life Insurance policy over any 30-year window using Guardian's actual published Dividend Interest Rates (DIR) from 1989 to present.
-
 **Audience:** Personal use / research  
 **Stack:** HTML + CSS + JavaScript (vanilla), Chart.js for visualizations  
 **Deployment:** Static site (GitHub Pages or any static host)
@@ -21,10 +18,11 @@ a Guardian Whole Life Insurance policy over any 30-year window using Guardian's 
 
 ## Goals
 
-1. Let the user input policy parameters (annual premium, initial death benefit).
+1. Let the user input policy parameters (starting year, annual premium, initial death benefit).
 2. Let the user select any valid 30-year start year (1970–1996, giving full 30-year windows through 2026).
 3. Compute and display four key policy metrics over the 30-year period using Guardian's historical DIR data.
-4. Clearly communicate the distinction between DIR and personal rate of return.
+4. Display a graph of the annual return of each investment.
+5. Create a table of the total IRR of each investment each year.
 
 ---
 
@@ -93,6 +91,7 @@ Format: Annual average rate %
 ## Policy Model
 
 ### Inputs
+- `startingYear` - The year to start the 30 year period. Must be between 1970 and 30 years before current year. (default: 30 years before current year)
 - `annualPremium` — annual level premium (default: $5,000)
 - `initialDeathBenefit` — face amount at policy issue (default: $500,000)
 - `startYear` — policy issue year (range: 1989–1996)
