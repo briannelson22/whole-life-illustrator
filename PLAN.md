@@ -2,7 +2,16 @@
 
 ## Overview
 
-An interactive, single-page web application that models the rate of return on a Guardian Whole Life Insurance policy over any 30-year window using Guardian's actual published Dividend Interest Rates (DIR) from 1989 to present.
+An interactive, single-page web application that compares the rate of return of a Guardian Whole Life Policy to different investments since 1970.
+
+The other investments will be:
+1. S & P 500
+2. BND Total Bond or equivalent
+3. 6 month CD
+4. High Yield Savings Account
+
+
+a Guardian Whole Life Insurance policy over any 30-year window using Guardian's actual published Dividend Interest Rates (DIR) from 1989 to present.
 
 **Audience:** Personal use / research  
 **Stack:** HTML + CSS + JavaScript (vanilla), Chart.js for visualizations  
@@ -13,14 +22,15 @@ An interactive, single-page web application that models the rate of return on a 
 ## Goals
 
 1. Let the user input policy parameters (annual premium, initial death benefit).
-2. Let the user select any valid 30-year start year (1989–1996, giving full 30-year windows through 2026).
+2. Let the user select any valid 30-year start year (1970–1996, giving full 30-year windows through 2026).
 3. Compute and display four key policy metrics over the 30-year period using Guardian's historical DIR data.
 4. Clearly communicate the distinction between DIR and personal rate of return.
 
 ---
 
-## Data Source
+## Data Sources
 
+### Guardian Whole Life
 Guardian's published Dividend Interest Rates (DIR), sourced from:
 - NFP Historical Whole Life Dividends table (1989–2016)
 - topwholelife.com annual updates (2017–2025)
