@@ -5,7 +5,7 @@
 An interactive, single-page web application that compares the rate of return of a Guardian Whole Life Policy to different investments since 1970.
 
 The other investments will be:
-1. S & P 500
+1. S&P 500
 2. BND Total Bond or equivalent
 3. 6 month CD
 4. High Yield Savings Account
@@ -53,6 +53,40 @@ Guardian's published Dividend Interest Rates (DIR), sourced from:
 | 2001 | 8.50  | 2014 | 6.25 |      |      |
 
 Future years beyond 2026 default to 6.10% (recent average) for projections.
+
+### S&P 500
+S&P 500 (since 1970)
+Best source: Robert Shiller's dataset — free, goes back to 1871, includes price + dividends. Download the Excel file directly.
+Backup source: Macrotrends — annual returns with dividends, easy CSV export.
+API option: Yahoo Finance via Python (yfinance library, ticker ^GSPC) — goes back to 1970.
+Format: Annual total return % (price change + dividends reinvested)
+
+### BND Bond ETF or equivalent
+BND Bond ETF (since 1970)
+BND launched in 2007, so pre-2007 data requires its underlying index as a proxy.
+
+Phase 1 (1970–2006): Use the Bloomberg U.S. Aggregate Bond Index (formerly Lehman Aggregate). Best free source is the NYU Stern historical returns dataset — download the spreadsheet, use the "Bond" column.
+Phase 2 (2007–present): Yahoo Finance via yfinance (ticker BND) or directly from Vanguard's fund page.
+Splice point: 2007 — join the two series at BND's inception date.
+Format: Annual total return % including coupon reinvestment
+
+### 6-Month CD
+6-Month CD (since 1970)
+CD rate data is well-documented by the Federal Reserve.
+
+Best source: FRED (Federal Reserve Economic Data) — search for series CD6M (6-Month CD rate, secondary market) or CDS6 for the national average. Free CSV download or API.
+FRED API: Free key available at fred.stlouisfed.org — pull with Python fredapi library or direct REST call.
+Note: Pre-1984 data reflects secondary market negotiable CDs, not retail bank CDs — a close but not identical proxy.
+Format: Annual average rate % (not total return — no price appreciation, just the yield)
+
+### High-Yield Savings Account
+High-Yield Savings Account (since 1970)
+No single HYSA product existed in 1970, so this requires a proxy series.
+
+1970–2018 proxy: Use the Federal Funds Rate or the national average savings rate from FRED — series FEDFUNDS or SAVINGSL (deposits savings rate). HYSAs historically track the fed funds rate closely.
+2018–present: Bankrate's historical HYSA data — best available rates by year. May require manual lookup or scraping.
+FRED series to use: FEDFUNDS as the backbone proxy, discounted slightly (HYSAs typically run 0.25–0.5% below the fed funds rate).
+Format: Annual average rate %
 
 ---
 
