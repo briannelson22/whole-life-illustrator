@@ -91,10 +91,9 @@ Format: Annual average rate %
 ## Policy Model
 
 ### Inputs
-- `startingYear` - The year to start the 30 year period. Must be between 1970 and 30 years before current year. (default: 30 years before current year)
 - `annualPremium` — annual level premium (default: $5,000)
 - `initialDeathBenefit` — face amount at policy issue (default: $500,000)
-- `startYear` — policy issue year (range: 1989–1996)
+- `startYear` — policy issue year (range: 1970–1996)
 
 ### Cash Value Calculation
 Cash value grows year-over-year using DIR applied to accumulated value, net of load factors:
