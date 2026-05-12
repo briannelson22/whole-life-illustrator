@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Whole Life Illustrator</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root {
+    --ink: #1a1714;
+    --paper: #f5f0e8;
+    --cream: #ede7d7;
+    --gold: #b8860b;
+    --gold-light: #d4a017;
+    --gold-pale: #f5e8c0;
+    --muted: #7a6e5f;
+    --border: #d4c9b0;
+    --sp: #2563a8;
+    --bond: #1a7a54;
+    --cd: #b84a1a;
+    --hysa: #7a3a9a;
+    --wl: #b8860b;
+    --card-bg: #faf7f0;
+    --shadow: 0 2px 12px rgba(26,23,20,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 2rem 2.5rem 1.5rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  header h1 span {
+    color: var(--gold-light);
+  }
+  header p {
+    color: #a09585;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    margin-top: 4px;
+    letter-spacing: 0.05em;
+  }
+  .header-right {
+    text-align: right;
+  }
+  .dir-badge {
+    display: inline-block;
+    background: var(--gold);
+    color: #fff;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 3px;
+    letter-spacing: 0.06em;
+  }
+
+  /* LAYOUT */
+  .app {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 0;
+    min-height: calc(100vh - 100px);
+  }
+
+  /* SIDEBAR */
+  aside {
+    background: var(--cream);
+    border-right: 1px solid var(--border);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .field {
+    margin-bottom: 1rem;
+  }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 5px;
+  }
+  .field input[type="number"],
+  .field select {
+    width: 100%;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .field input[type="number"]:focus,
+  .field select:focus {
+    border-color: var(--gold);
+  }
+
+  .field input[type="range"] {
+    width: 100%;
+    accent-color: var(--gold);
+    cursor: pointer;
+  }
+  .range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+  .range-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-top: 4px;
+  }
+  .range-window {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    margin-top: 2px;
+  }
+
+  /* METRICS */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .metric-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+  .metric-card.full { grid-column: 1 / -1; }
+  .metric-card .mlabel {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .metric-card .mvalue {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .metric-card .mvalue.gold { color: var(--gold); }
+  .metric-card .msub {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* MAIN CONTENT */
+  main {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    overflow: hidden;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .tab-btn {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 8px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    cursor: pointer;
+    margin-bottom: -1px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .tab-btn:hover { color: var(--ink); }
+  .tab-btn.active {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* CHART CONTAINERS */
+  .chart-wrap {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+  }
+  .chart-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .chart-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+  .chart-canvas-wrap {
+    position: relative;
+    width: 100%;
+    height: 300px;
+  }
+
+  /* TABLE */
+  .table-wrap {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .table-header {
+    padding: 1rem 1.25rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .table-scroll {
+    overflow-x: auto;
+    max-height: 480px;
+    overflow-y: auto;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+  }
+  thead th {
+    background: var(--cream);
+    padding: 8px 12px;
+    text-align: right;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    position: sticky;
+    top: 0;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  thead th:first-child { text-align: center; }
+  tbody tr:nth-child(even) { background: rgba(212,192,176,0.12); }
+  tbody tr:hover { background: var(--gold-pale); }
+  tbody td {
+    padding: 7px 12px;
+    text-align: right;
+    border-bottom: 1px solid rgba(212,201,176,0.3);
+    white-space: nowrap;
+  }
+  tbody td:first-child { text-align: center; font-weight: 500; }
+  .pos { color: #1a7a54; }
+  .neg { color: #b84a1a; }
+  .wl-cell { color: var(--gold); font-weight: 500; }
+
+  /* DISCLAIMER */
+  .disclaimer {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .app { grid-template-columns: 1fr; }
+    aside { border-right: none; border-bottom: 1px solid var(--border); }
+    .metrics-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Whole Life <span>Illustrator</span></h1>
+    <p>Guardian Policy vs. Market Investments · 1970–2026</p>
+  </div>
+  <div class="header-right">
+    <div class="dir-badge" id="dirBadge">AVG DIR: —%</div>
+    <p style="margin-top:6px; font-size:11px; color:#a09585; font-family:'DM Mono',monospace;">30-year window</p>
+  </div>
+</header>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside>
+    <div>
+      <div class="section-label">Policy Parameters</div>
+      <div class="field">
+        <label>Annual Premium ($)</label>
+        <input type="number" id="annualPremium" value="5000" min="1000" max="100000" step="500">
+      </div>
+      <div class="field">
+        <label>Initial Death Benefit ($)</label>
+        <input type="number" id="initialDB" value="500000" min="50000" max="5000000" step="10000">
+      </div>
+      <div class="field">
+        <label>Policy Start Year</label>
+        <input type="range" id="startYear" min="1970" max="1996" value="1985" step="1">
+        <div class="range-value" id="startYearVal">1985</div>
+        <div class="range-window" id="windowLabel">30-year window: 1985 – 2015</div>
+        <div class="range-labels"><span>1970</span><span>1996</span></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">30-Year Summary</div>
+      <div class="metrics-grid">
+        <div class="metric-card full">
+          <div class="mlabel">Whole Life IRR (yr 30)</div>
+          <div class="mvalue gold" id="mWlIrr">—</div>
+          <div class="msub">annualized</div>
+        </div>
+        <div class="metric-card">
+          <div class="mlabel">Cash Value</div>
+          <div class="mvalue" id="mCv">—</div>
+          <div class="msub" id="mCvSub">vs premiums</div>
+        </div>
+        <div class="metric-card">
+          <div class="mlabel">Death Benefit</div>
+          <div class="mvalue" id="mDb">—</div>
+          <div class="msub">year 30</div>
+        </div>
+        <div class="metric-card full">
+          <div class="mlabel">Accumulated Dividends</div>
+          <div class="mvalue" id="mDiv">—</div>
+          <div class="msub">reinvested</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Series Legend</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--wl)"></div>Guardian Whole Life (DIR)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--sp)"></div>S&amp;P 500 (total return)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--bond)"></div>BND / US Agg Bond</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--cd)"></div>6-Month CD</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--hysa)"></div>High-Yield Savings</div>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      DIR ≠ personal rate of return. Load factors are approximations. For research only — not financial or insurance advice. Guardian dividends not guaranteed.
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="irr">IRR Over Time</button>
+      <button class="tab-btn" data-tab="cashvalue">Cash Value</button>
+      <button class="tab-btn" data-tab="deathbenefit">Death Benefit</button>
+      <button class="tab-btn" data-tab="dividends">Dividends</button>
+      <button class="tab-btn" data-tab="table">IRR Table</button>
+    </div>
+
+    <!-- TAB: IRR -->
+    <div class="tab-panel active" id="tab-irr">
+      <div class="chart-wrap">
+        <div class="chart-title">Annualized IRR by Policy Year</div>
+        <div class="chart-sub">Whole Life IRR compared to equivalent buy-and-hold returns for each investment over the same period</div>
+        <div class="chart-canvas-wrap">
+          <canvas id="irrChart" role="img" aria-label="Line chart of annualized IRR for each investment from year 1 to 30"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: CASH VALUE -->
+    <div class="tab-panel" id="tab-cashvalue">
+      <div class="chart-wrap">
+        <div class="chart-title">Cash Value vs. Premiums Paid</div>
+        <div class="chart-sub">Accumulated cash value against total premiums invested — crossover shows break-even point</div>
+        <div class="chart-canvas-wrap">
+          <canvas id="cvChart" role="img" aria-label="Line chart of cash value vs premiums paid over 30 years"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: DEATH BENEFIT -->
+    <div class="tab-panel" id="tab-deathbenefit">
+      <div class="chart-wrap">
+        <div class="chart-title">Death Benefit Growth</div>
+        <div class="chart-sub">Initial death benefit + paid-up additions accumulating over 30 years</div>
+        <div class="chart-canvas-wrap">
+          <canvas id="dbChart" role="img" aria-label="Bar chart of death benefit growth over 30 years"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: DIVIDENDS -->
+    <div class="tab-panel" id="tab-dividends">
+      <div class="chart-wrap">
+        <div class="chart-title">Dividend Accumulation</div>
+        <div class="chart-sub">Reinvested dividend pool compounding over the 30-year window</div>
+        <div class="chart-canvas-wrap">
+          <canvas id="divChart" role="img" aria-label="Area chart of accumulated dividends over 30 years"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: TABLE -->
+    <div class="tab-panel" id="tab-table">
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="chart-title">Year-by-Year IRR Table</div>
+          <div class="chart-sub">Annualized internal rate of return for each investment at every policy year</div>
+        </div>
+        <div class="table-scroll">
+          <table id="irrTable">
+            <thead>
+              <tr>
+                <th>Yr</th>
+                <th>Cal Year</th>
+                <th>WL IRR</th>
+                <th>S&amp;P 500 IRR</th>
+                <th>BND IRR</th>
+                <th>6-Mo CD IRR</th>
+                <th>HYSA IRR</th>
+                <th>WL Cash Value</th>
+                <th>Total Premium</th>
+                <th>Death Benefit</th>
+              </tr>
+            </thead>
+            <tbody id="irrTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// ── DATA ────────────────────────────────────────────────────────────────────
+
+const DIR = {
+  1970:8.50,1971:8.00,1972:8.00,1973:8.50,1974:9.00,1975:9.25,
+  1976:9.25,1977:9.25,1978:9.50,1979:9.75,1980:10.00,1981:11.00,
+  1982:11.50,1983:11.50,1984:11.50,1985:11.50,1986:11.00,1987:10.75,
+  1988:11.00,1989:11.50,1990:11.00,1991:10.50,1992:10.25,1993:9.75,
+  1994:9.00,1995:8.50,1996:8.00,1997:8.50,1998:8.75,1999:8.75,
+  2000:8.50,2001:8.50,2002:8.00,2003:7.00,2004:6.60,2005:6.75,
+  2006:6.50,2007:6.75,2008:7.25,2009:7.30,2010:7.00,2011:6.85,
+  2012:6.95,2013:6.65,2014:6.25,2015:6.05,2016:6.05,2017:5.85,
+  2018:5.85,2019:5.85,2020:5.65,2021:5.65,2022:5.65,2023:5.75,
+  2024:5.90,2025:6.10,2026:6.25
+};
+function getDIR(y){ return (DIR[y] || 6.10) / 100; }
+
+// S&P 500 total return by year (dividends reinvested)
+const SP500 = {
+  1970:-0.3,1971:14.3,1972:19.0,1973:-14.7,1974:-26.5,1975:37.2,
+  1976:23.8,1977:-7.2,1978:6.6,1979:18.4,1980:32.4,1981:-4.9,
+  1982:21.4,1983:22.5,1984:6.3,1985:32.2,1986:18.5,1987:5.2,
+  1988:16.8,1989:31.5,1990:-3.1,1991:30.5,1992:7.6,1993:10.1,
+  1994:1.3,1995:37.6,1996:23.0,1997:33.4,1998:28.6,1999:21.0,
+  2000:-9.1,2001:-11.9,2002:-22.1,2003:28.7,2004:10.9,2005:4.9,
+  2006:15.8,2007:5.5,2008:-37.0,2009:26.5,2010:15.1,2011:2.1,
+  2012:16.0,2013:32.4,2014:13.7,2015:1.4,2016:12.0,2017:21.8,
+  2018:-4.4,2019:31.5,2020:18.4,2021:28.7,2022:-18.1,2023:26.3,
+  2024:25.0,2025:25.0,2026:8.0
+};
+
+// BND / Bloomberg US Agg total return
+const BND = {
+  1970:16.9,1971:13.2,1972:5.7,1973:1.1,1974:0.2,1975:12.3,
+  1976:15.6,1977:3.0,1978:1.4,1979:2.3,1980:2.7,1981:6.3,
+  1982:32.6,1983:8.4,1984:15.1,1985:22.1,1986:15.3,1987:2.8,
+  1988:7.9,1989:14.5,1990:8.7,1991:15.5,1992:7.2,1993:9.8,
+  1994:-2.9,1995:18.5,1996:3.6,1997:9.8,1998:8.7,1999:-0.8,
+  2000:11.6,2001:8.4,2002:10.2,2003:4.1,2004:4.3,2005:2.4,
+  2006:4.3,2007:7.0,2008:5.7,2009:5.9,2010:6.5,2011:7.8,
+  2012:4.2,2013:-2.0,2014:6.0,2015:0.5,2016:2.6,2017:3.5,
+  2018:0.0,2019:8.7,2020:7.7,2021:-1.7,2022:-13.1,2023:5.5,
+  2024:1.4,2025:7.1,2026:3.0
+};
+
+// 6-month CD national average rate
+const CD6M = {
+  1970:7.2,1971:5.5,1972:5.0,1973:7.4,1974:9.5,1975:6.8,
+  1976:5.6,1977:5.7,1978:8.1,1979:11.0,1980:12.9,1981:15.8,
+  1982:12.6,1983:9.4,1984:10.7,1985:8.2,1986:6.5,1987:7.0,
+  1988:7.8,1989:9.0,1990:8.2,1991:6.1,1992:3.9,1993:3.2,
+  1994:4.5,1995:5.5,1996:5.2,1997:5.3,1998:5.1,1999:4.7,
+  2000:6.2,2001:3.5,2002:1.6,2003:1.0,2004:1.5,2005:3.0,
+  2006:4.8,2007:5.0,2008:2.9,2009:0.5,2010:0.3,2011:0.2,
+  2012:0.2,2013:0.1,2014:0.1,2015:0.2,2016:0.4,2017:1.1,
+  2018:2.2,2019:2.2,2020:0.2,2021:0.1,2022:2.5,2023:5.2,
+  2024:5.1,2025:4.5,2026:4.0
+};
+
+// High-Yield Savings (FEDFUNDS proxy pre-2018, best HYSA rates post-2018)
+const HYSA = {
+  1970:6.5,1971:4.8,1972:4.5,1973:7.0,1974:9.0,1975:6.2,
+  1976:5.1,1977:5.2,1978:7.8,1979:10.5,1980:12.5,1981:15.2,
+  1982:11.9,1983:8.8,1984:10.0,1985:7.8,1986:6.0,1987:6.5,
+  1988:7.4,1989:8.5,1990:7.8,1991:5.8,1992:3.5,1993:2.9,
+  1994:4.2,1995:5.0,1996:4.9,1997:5.0,1998:4.8,1999:4.5,
+  2000:5.8,2001:3.2,2002:1.4,2003:0.8,2004:1.2,2005:2.8,
+  2006:4.5,2007:4.8,2008:2.5,2009:0.4,2010:0.2,2011:0.1,
+  2012:0.1,2013:0.1,2014:0.1,2015:0.1,2016:0.3,2017:1.0,
+  2018:1.9,2019:2.0,2020:0.1,2021:0.1,2022:2.0,2023:4.8,
+  2024:4.8,2025:4.2,2026:3.8
+};
+
+function getRate(map, y){ return (map[y] || 0) / 100; }
+
+// ── CALCULATIONS ────────────────────────────────────────────────────────────
+
+function calcIRR(cashflows) {
+  // cashflows[0] = -premium year1, ..., cashflows[t] = CV at year t (terminal)
+  // We solve: sum(-P_i / (1+r)^i) + CV_t / (1+r)^t = 0
+  // using bisection
+  function npv(r, premiums, terminalCV, n) {
+    let sum = 0;
+    for (let i = 1; i <= n; i++) sum -= premiums / Math.pow(1+r, i);
+    sum += terminalCV / Math.pow(1+r, n);
+    return sum;
+  }
+  return (premiums, terminalCV, n) => {
+    let lo = -0.5, hi = 2.0;
+    for (let i = 0; i < 80; i++) {
+      const mid = (lo + hi) / 2;
+      if (npv(mid, premiums, terminalCV, n) > 0) lo = mid; else hi = mid;
+    }
+    return (lo + hi) / 2;
+  };
+}
+const irrSolver = calcIRR();
+
+function computeInvestmentIRR(rateMap, startYear, n) {
+  // For rate-based products (CD, HYSA): compound the rate each year
+  // IRR = CAGR of $1 invested at start
+  let val = 1.0;
+  for (let i = 0; i < n; i++) {
+    val *= (1 + getRate(rateMap, startYear + i));
+  }
+  return Math.pow(val, 1/n) - 1;
+}
+
+function computeStockIRR(rateMap, startYear, n) {
+  // Buy-and-hold CAGR
+  let val = 1.0;
+  for (let i = 0; i < n; i++) {
+    val *= (1 + getRate(rateMap, startYear + i));
+  }
+  return Math.pow(val, 1/n) - 1;
+}
+
+function computeAll(startYear, annualPremium, initialDB) {
+  const years = Array.from({length:30},(_,i)=>i+1);
+  const calYears = years.map(y => startYear + y - 1);
+
+  // Policy model
+  let cv = 0, db = initialDB, totalDiv = 0;
+  const cvArr=[], dbArr=[], divArr=[], wlIrrArr=[];
+  const totalPremArr=[];
+
+  for (let t = 1; t <= 30; t++) {
+    const yr = startYear + t - 1;
+    const dir = getDIR(yr);
+    const load = t===1 ? 0.35 : t<=5 ? 0.10 : 0.05;
+    const netP = annualPremium * (1 - load);
+    cv = (cv + netP) * (1 + dir);
+
+    const yearDiv = cv * dir * 0.15; // simplified dividend portion
+    const pua = cv * dir * 0.85;
+    db = db + pua + annualPremium * 0.02;
+    totalDiv = totalDiv + yearDiv * (1 + dir * 0.5);
+
+    cvArr.push(cv);
+    dbArr.push(db);
+    divArr.push(totalDiv);
+    totalPremArr.push(annualPremium * t);
+
+    const irr = irrSolver(annualPremium, cv, t);
+    wlIrrArr.push(irr * 100);
+  }
+
+  // Other investments IRR at each year
+  const spIrrArr=[], bndIrrArr=[], cdIrrArr=[], hysaIrrArr=[];
+  for (let t = 1; t <= 30; t++) {
+    spIrrArr.push(computeStockIRR(SP500, startYear, t) * 100);
+    bndIrrArr.push(computeStockIRR(BND, startYear, t) * 100);
+    cdIrrArr.push(computeInvestmentIRR(CD6M, startYear, t) * 100);
+    hysaIrrArr.push(computeInvestmentIRR(HYSA, startYear, t) * 100);
+  }
+
+  return { years, calYears, cvArr, dbArr, divArr, wlIrrArr,
+           spIrrArr, bndIrrArr, cdIrrArr, hysaIrrArr, totalPremArr };
+}
+
+// ── CHART MANAGEMENT ────────────────────────────────────────────────────────
+
+const charts = {};
+
+function destroyChart(id) {
+  if (charts[id]) { charts[id].destroy(); delete charts[id]; }
+}
+
+const COLORS = {
+  wl: '#b8860b', sp: '#2563a8', bond: '#1a7a54', cd: '#b84a1a', hysa: '#7a3a9a'
+};
+
+function makeLabels(years, calYears) {
+  return years.map((y, i) => `Yr ${y} (${calYears[i]})`);
+}
+
+function renderIRRChart(data) {
+  destroyChart('irr');
+  const ctx = document.getElementById('irrChart');
+  const labels = data.years.map(y => `Yr ${y}`);
+  charts['irr'] = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label:'Guardian WL', data: data.wlIrrArr, borderColor: COLORS.wl, backgroundColor:'rgba(184,134,11,0.08)', borderWidth:2.5, pointRadius:0, pointHoverRadius:4, tension:0.35 },
+        { label:'S&P 500',     data: data.spIrrArr,  borderColor: COLORS.sp, backgroundColor:'rgba(37,99,168,0.05)', borderWidth:2, pointRadius:0, pointHoverRadius:4, tension:0.35 },
+        { label:'BND Bond',    data: data.bndIrrArr, borderColor: COLORS.bond, backgroundColor:'rgba(26,122,84,0.05)', borderDash:[5,4], borderWidth:2, pointRadius:0, pointHoverRadius:4, tension:0.35 },
+        { label:'6-Mo CD',     data: data.cdIrrArr,  borderColor: COLORS.cd, borderDash:[3,3], borderWidth:1.5, pointRadius:0, pointHoverRadius:4, tension:0.35 },
+        { label:'HYSA',        data: data.hysaIrrArr,borderColor: COLORS.hysa, borderDash:[2,4], borderWidth:1.5, pointRadius:0, pointHoverRadius:4, tension:0.35 },
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label: c => `${c.dataset.label}: ${c.parsed.y.toFixed(2)}%` }}},
+      scales:{
+        x:{ ticks:{ maxTicksLimit:10, font:{size:10}, color:'#7a6e5f' }, grid:{color:'rgba(212,201,176,0.3)'} },
+        y:{ ticks:{ callback: v => v.toFixed(1)+'%', font:{size:10}, color:'#7a6e5f' }, grid:{color:'rgba(212,201,176,0.3)'} }
+      }
+    }
+  });
+}
+
+function renderCVChart(data) {
+  destroyChart('cv');
+  const ctx = document.getElementById('cvChart');
+  const labels = data.years.map(y => `Yr ${y}`);
+  charts['cv'] = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label:'Cash Value', data: data.cvArr, borderColor: COLORS.wl, backgroundColor:'rgba(184,134,11,0.12)', borderWidth:2.5, fill:true, pointRadius:0, pointHoverRadius:4, tension:0.3 },
+        { label:'Total Premiums', data: data.totalPremArr, borderColor:'#7a6e5f', borderDash:[4,4], borderWidth:1.5, fill:false, pointRadius:0, pointHoverRadius:4, tension:0.3 },
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label: c => `${c.dataset.label}: $${Math.round(c.parsed.y).toLocaleString()}` }}},
+      scales:{
+        x:{ ticks:{ maxTicksLimit:10, font:{size:10}, color:'#7a6e5f' }, grid:{color:'rgba(212,201,176,0.3)'} },
+        y:{ ticks:{ callback: v => '$'+Math.round(v/1000)+'k', font:{size:10}, color:'#7a6e5f' }, grid:{color:'rgba(212,201,176,0.3)'} }
+      }
+    }
+  });
+}
+
+function renderDBChart(data) {
+  destroyChart('db');
+  const ctx = document.getElementById('dbChart');
+  const labels = data.years.map(y => `Yr ${y}`);
+  charts['db'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label:'Death Benefit', data: data.dbArr, backgroundColor:'rgba(184,134,11,0.7)', borderColor: COLORS.wl, borderWidth:1, borderRadius:2 }
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label: c => `Death Benefit: $${Math.round(c.parsed.y).toLocaleString()}` }}},
+      scales:{
+        x:{ ticks:{ maxTicksLimit:10, font:{size:10}, color:'#7a6e5f' }, grid:{display:false} },
+        y:{ ticks:{ callback: v => '$'+Math.round(v/1000)+'k', font:{size:10}, color:'#7a6e5f' }, grid:{color:'rgba(212,201,176,0.3)'} }
+      }
+    }
+  });
+}
+
+function renderDivChart(data) {
+  destroyChart('div');
+  const ctx = document.getElementById('divChart');
+  const labels = data.years.map(y => `Yr ${y}`);
+  charts['div'] = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label:'Accumulated Dividends', data: data.divArr, borderColor: COLORS.wl, backgroundColor:'rgba(184,134,11,0.15)', fill:true, borderWidth:2.5, pointRadius:0, pointHoverRadius:4, tension:0.4 }
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label: c => `Dividends: $${Math.round(c.parsed.y).toLocaleString()}` }}},
+      scales:{
+        x:{ ticks:{ maxTicksLimit:10, font:{size:10}, color:'#7a6e5f' }, grid:{color:'rgba(212,201,176,0.3)'} },
+        y:{ ticks:{ callback: v => '$'+Math.round(v/1000)+'k', font:{size:10}, color:'#7a6e5f' }, grid:{color:'rgba(212,201,176,0.3)'} }
+      }
+    }
+  });
+}
+
+function renderTable(data, startYear) {
+  const tbody = document.getElementById('irrTableBody');
+  tbody.innerHTML = '';
+  for (let i = 0; i < 30; i++) {
+    const t = i+1;
+    const wl = data.wlIrrArr[i];
+    const sp = data.spIrrArr[i];
+    const bnd = data.bndIrrArr[i];
+    const cd = data.cdIrrArr[i];
+    const hy = data.hysaIrrArr[i];
+    const cv = data.cvArr[i];
+    const pr = data.totalPremArr[i];
+    const db = data.dbArr[i];
+    const fmt = v => `<span class="${v>=0?'pos':'neg'}">${v.toFixed(2)}%</span>`;
+    const money = v => '$'+Math.round(v).toLocaleString();
+    tbody.innerHTML += `<tr>
+      <td>${t}</td>
+      <td>${startYear+t-1}</td>
+      <td class="wl-cell">${wl.toFixed(2)}%</td>
+      <td>${fmt(sp)}</td>
+      <td>${fmt(bnd)}</td>
+      <td>${fmt(cd)}</td>
+      <td>${fmt(hy)}</td>
+      <td>${money(cv)}</td>
+      <td>${money(pr)}</td>
+      <td>${money(db)}</td>
+    </tr>`;
+  }
+}
+
+// ── UPDATE ───────────────────────────────────────────────────────────────────
+
+function update() {
+  const startYear = parseInt(document.getElementById('startYear').value);
+  const annualPremium = parseFloat(document.getElementById('annualPremium').value) || 5000;
+  const initialDB = parseFloat(document.getElementById('initialDB').value) || 500000;
+
+  document.getElementById('startYearVal').textContent = startYear;
+  document.getElementById('windowLabel').textContent = `30-year window: ${startYear} – ${startYear+29}`;
+
+  // Avg DIR for this window
+  let totalDir = 0;
+  for (let i = 0; i < 30; i++) totalDir += getDIR(startYear + i);
+  const avgDir = (totalDir / 30 * 100).toFixed(2);
+  document.getElementById('dirBadge').textContent = `AVG DIR: ${avgDir}%`;
+
+  const data = computeAll(startYear, annualPremium, initialDB);
+
+  // Summary metrics
+  const yr30wl = data.wlIrrArr[29];
+  const cv30 = data.cvArr[29];
+  const pr30 = annualPremium * 30;
+  const db30 = data.dbArr[29];
+  const div30 = data.divArr[29];
+
+  document.getElementById('mWlIrr').textContent = yr30wl.toFixed(2) + '%';
+  document.getElementById('mCv').textContent = '$' + Math.round(cv30/1000) + 'k';
+  document.getElementById('mCvSub').textContent = `vs $${Math.round(pr30/1000)}k premiums`;
+  document.getElementById('mDb').textContent = '$' + Math.round(db30/1000) + 'k';
+  document.getElementById('mDiv').textContent = '$' + Math.round(div30/1000) + 'k';
+
+  // Charts
+  renderIRRChart(data);
+  renderCVChart(data);
+  renderDBChart(data);
+  renderDivChart(data);
+  renderTable(data, startYear);
+}
+
+// ── TABS ─────────────────────────────────────────────────────────────────────
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    // Trigger chart resize
+    setTimeout(() => { Object.values(charts).forEach(c => c.resize()); }, 10);
+  });
+});
+
+// ── EVENTS ────────────────────────────────────────────────────────────────────
+
+let debounceTimer;
+function debouncedUpdate() {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(update, 150);
+}
+
+document.getElementById('startYear').addEventListener('input', debouncedUpdate);
+document.getElementById('annualPremium').addEventListener('input', debouncedUpdate);
+document.getElementById('initialDB').addEventListener('input', debouncedUpdate);
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+update();
+</script>
+</body>
+</html>
